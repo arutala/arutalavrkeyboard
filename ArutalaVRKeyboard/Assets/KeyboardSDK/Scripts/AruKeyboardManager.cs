@@ -163,7 +163,7 @@ public class AruKeyboardManager : MonoBehaviour
     {
         if (inputField.GetComponentInChildren<TMP_InputField>().lineType == TMP_InputField.LineType.SingleLine)
         {
-            ResetKeyboard();
+            SubmitSelected();
         }
         else
         {
@@ -234,6 +234,11 @@ public class AruKeyboardManager : MonoBehaviour
                 break;
         }
         SwitchKeyboard();
+    }
+
+    public void SubmitSelected()
+    {
+        ResetKeyboard();
     }
 
     #endregion
