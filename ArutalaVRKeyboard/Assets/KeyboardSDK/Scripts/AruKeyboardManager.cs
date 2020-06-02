@@ -7,17 +7,27 @@ using UnityEngine.UI;
 public class AruKeyboardManager : MonoBehaviour
 {
     #region Variables
-    [Header("Button")]
     [SerializeField]
     private GameObject inputField;
 
     private string tempText = "";
     private bool capslockPressed;
 
+    //Keyboards
     private GameObject aruKeyboard;
     private GameObject lowercaseKeyboard;
     private GameObject uppercaseKeyboard;
     private GameObject symbolKeyboard;
+
+    //Buttons
+    private GameObject capslockLC;
+    private GameObject capslockUC;
+    private GameObject shiftLC;
+    private GameObject shiftUC;
+
+    //Colors
+    private Color32 normalColor = new Color32(17, 17, 19, 0);
+    private Color32 selectedColor = new Color32(30, 28, 39, 192);
 
     #endregion
 
@@ -50,6 +60,28 @@ public class AruKeyboardManager : MonoBehaviour
         lowercaseKeyboard = aruKeyboard.transform.GetChild(1).GetChild(0).gameObject;
         uppercaseKeyboard = aruKeyboard.transform.GetChild(1).GetChild(1).gameObject;
         symbolKeyboard = aruKeyboard.transform.GetChild(1).GetChild(2).gameObject;
+
+        //Buttons
+        capslockLC = lowercaseKeyboard.transform.GetChild(1).GetChild(0).gameObject;
+        capslockUC = uppercaseKeyboard.transform.GetChild(1).GetChild(0).gameObject;
+        shiftLC = lowercaseKeyboard.transform.GetChild(2).GetChild(0).gameObject;
+        shiftUC = uppercaseKeyboard.transform.GetChild(2).GetChild(0).gameObject;
+
+        keyboardState = KeyboardState.Lowercase;
+    }
+
+    private void FixedUpdate()
+    {
+        if(capslockPressed == true)
+        {
+            ChangeNormalButtonColor(capslockLC, selectedColor);
+            ChangeNormalButtonColor(capslockUC, selectedColor);
+        }
+        else
+        {
+            ChangeNormalButtonColor(capslockLC, normalColor);
+            ChangeNormalButtonColor(capslockUC, normalColor);
+        }
     }
 
     //Input the letters on the keyboard into the input field
@@ -58,6 +90,7 @@ public class AruKeyboardManager : MonoBehaviour
         tempText += text;
         UpdateText();
         ResetShift();
+        StartCoroutine(Haptics());
     }
 
     //Get the keyed texts
@@ -83,6 +116,7 @@ public class AruKeyboardManager : MonoBehaviour
     //Reset the input field into default state
     public void ResetInputField()
     {
+        StartCoroutine(Haptics());
         tempText = "";
         inputField.GetComponentInChildren<TMP_InputField>().text = tempText;
     }
@@ -90,6 +124,7 @@ public class AruKeyboardManager : MonoBehaviour
     //Function to reset keyboard to the default state
     public void ResetKeyboard()
     {
+        StartCoroutine(Haptics());
         tempText = "";
         inputField.GetComponentInChildren<TMP_InputField>().text = tempText;
         keyboardState = KeyboardState.Lowercase;
@@ -126,6 +161,7 @@ public class AruKeyboardManager : MonoBehaviour
     //Backspace button function
     public void DeleteText()
     {
+        StartCoroutine(Haptics());
         if (tempText.Length > 0)
         {
             string text;
@@ -138,6 +174,7 @@ public class AruKeyboardManager : MonoBehaviour
     //Capslock button function
     public void CapslockSelected()
     {
+        StartCoroutine(Haptics());
         switch (keyboardState)
         {
             case KeyboardState.Uppercase:
@@ -167,6 +204,7 @@ public class AruKeyboardManager : MonoBehaviour
         }
         else
         {
+            StartCoroutine(Haptics());
             InputText("\n");
         }
     }
@@ -174,6 +212,7 @@ public class AruKeyboardManager : MonoBehaviour
     //Shift Button Function
     public void ShiftSelected()
     {
+        StartCoroutine(Haptics());
         shiftState = ShiftState.ShiftSelected;
         if (keyboardState == KeyboardState.Lowercase)
         {
@@ -186,6 +225,8 @@ public class AruKeyboardManager : MonoBehaviour
             shiftState = ShiftState.KeySelected;
         }
         SwitchKeyboard();
+        ChangeNormalButtonColor(shiftLC, selectedColor);
+        ChangeNormalButtonColor(shiftUC, selectedColor);
     }
 
     //Return the keyboard back to normal after shift
@@ -209,11 +250,14 @@ public class AruKeyboardManager : MonoBehaviour
         {
             shiftState = ShiftState.Idle;
         }
+        ChangeNormalButtonColor(shiftLC, normalColor);
+        ChangeNormalButtonColor(shiftUC, normalColor);
     }
 
     //Symbol button function
     public void SymbolSelected()
     {
+        StartCoroutine(Haptics());
         switch (keyboardState)
         {
             case KeyboardState.Lowercase:
@@ -242,4 +286,18 @@ public class AruKeyboardManager : MonoBehaviour
     }
 
     #endregion
+
+    private void ChangeNormalButtonColor(GameObject button, Color32 color32)
+    {
+        ColorBlock colorBlock = button.GetComponent<Button>().colors;
+        colorBlock.normalColor = color32;
+        button.GetComponent<Button>().colors = colorBlock;
+    }
+
+    private IEnumerator Haptics()
+    {
+        OVRInput.SetControllerVibration(0.5f, 0.5f, OVRInput.Controller.RTouch);
+        yield return new WaitForSeconds(0.15f);
+        OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.RTouch);
+    }
 }
