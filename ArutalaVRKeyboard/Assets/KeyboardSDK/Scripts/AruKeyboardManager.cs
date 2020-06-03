@@ -27,7 +27,7 @@ public class AruKeyboardManager : MonoBehaviour
 
     //Colors
     private Color32 normalColor = new Color32(17, 17, 19, 0);
-    private Color32 selectedColor = new Color32(30, 28, 39, 192);
+    private Color32 selectedColor = new Color32(122, 6, 242, 192);
 
     #endregion
 
@@ -67,7 +67,9 @@ public class AruKeyboardManager : MonoBehaviour
         shiftLC = lowercaseKeyboard.transform.GetChild(2).GetChild(0).gameObject;
         shiftUC = uppercaseKeyboard.transform.GetChild(2).GetChild(0).gameObject;
 
+        capslockPressed = false;
         keyboardState = KeyboardState.Lowercase;
+        shiftState = ShiftState.Idle;
     }
 
     private void FixedUpdate()
@@ -175,16 +177,22 @@ public class AruKeyboardManager : MonoBehaviour
     public void CapslockSelected()
     {
         StartCoroutine(Haptics());
-        switch (keyboardState)
+
+        if(capslockPressed == false)
         {
-            case KeyboardState.Uppercase:
-                capslockPressed = false;
-                keyboardState = KeyboardState.Lowercase;
-                break;
-            case KeyboardState.Lowercase:
-                capslockPressed = true;
-                keyboardState = KeyboardState.Uppercase;
-                break;
+            capslockPressed = true;
+            keyboardState = KeyboardState.Uppercase;
+            if(shiftState == ShiftState.KeySelected)
+            {
+                shiftState = ShiftState.Idle;
+                ChangeNormalButtonColor(shiftLC, normalColor);
+                ChangeNormalButtonColor(shiftUC, normalColor);
+            }
+        }
+        else if(capslockPressed == true)
+        {
+            capslockPressed = false;
+            keyboardState = KeyboardState.Lowercase;
         }
         SwitchKeyboard();
     }
