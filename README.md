@@ -8,12 +8,10 @@ This toolkit has been developed and tested using Unity 2019.1.7f1 with Oculus Ri
 - TextMeshPro
 
 ## Installation & Usage
-- Download this project’s Unity package. [link]
+- [Download this project’s Unity package.](https://github.com/arutala/arutalavrkeyboard/blob/master/AruKeyboardToolkit.unitypackage)
 - In your own Unity project, import the Interactive Keyboard VR by choosing “Assets” → “Import Package” → “Custom Package” → “AruKeyboard.unitypackage” from the Unity editor’s menus. 
-
 - Go to **KeyboardSDK** folder, then go to **Prefabs** folder.
 - Drag **AruKeyboard** prefab into your scene.
-
 - In the inspector windows of **AruKeyboard** prefab, drag your **LaserPointer** to **OVRRaycaster.Pointer** component
 - Drag **InputFieldSingle** prefab or **InputFieldTextArea** prefab into your scene.
 	- You can also use your own InputField with this interactive keyboard.
